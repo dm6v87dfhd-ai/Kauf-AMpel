@@ -80,13 +80,13 @@
               <input id="asOfDate" type="date" />
             </label>
             <label>Aktueller Kontostand Giro
-              <input id="currentBalance" type="number" inputmode="decimal" step="0.01" />
+              <input id="currentBalance" type="text" inputmode="decimal" step="0.01" />
             </label>
             <label>Nächster Gehaltseingang
               <input id="salaryDate" type="date" />
             </label>
             <label>Kaufbetrag prüfen
-              <input id="purchaseAmount" type="number" inputmode="decimal" step="0.01" />
+              <input id="purchaseAmount" type="text" inputmode="decimal" step="0.01" />
             </label>
           </div>
         </div>
@@ -110,13 +110,13 @@
           <p class="helper">Die Standardwerte entsprechen deiner Excel-Logik. Du kannst sie später anpassen, falls sich dein Soll-Giropuffer ändert.</p>
           <div class="form-grid">
             <label>Soll-Giropuffer / Grün ab
-              <input id="greenThreshold" type="number" inputmode="decimal" step="1" />
+              <input id="greenThreshold" type="text" inputmode="decimal" step="1" />
             </label>
             <label>Warnschwelle / Gelb ab
-              <input id="warnThreshold" type="number" inputmode="decimal" step="1" />
+              <input id="warnThreshold" type="text" inputmode="decimal" step="1" />
             </label>
             <label>Kritische Schwelle / Rot darunter
-              <input id="criticalThreshold" type="number" inputmode="decimal" step="1" />
+              <input id="criticalThreshold" type="text" inputmode="decimal" step="1" />
             </label>
           </div>
         </div>
@@ -188,7 +188,7 @@
         <label>Typ<select data-field="type"><option>Eingang</option><option>Ausgang</option></select></label>
         <label>Kategorie<input data-field="category" type="text" placeholder="z. B. Abo" /></label>
         <label>Beschreibung<input data-field="description" type="text" placeholder="z. B. Streaming" /></label>
-        <label>Betrag<input data-field="amount" type="number" inputmode="decimal" step="0.01" /></label>
+        <label>Betrag<input data-field="amount" type="text" inputmode="decimal" step="0.01" /></label>
         <label>Sicher?<select data-field="secure"><option>Ja</option><option>Nein</option></select></label>
         <label>Status<select data-field="status"><option>Offen</option><option>Abgegangen</option></select></label>
         <label>Hinweis<input data-field="note" type="text" /></label>

@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'giropuffer-ampel-v3-state';
-const VERSION_LABEL = 'iOS ruhig v5 · Tastatur-Fix';
+const VERSION_LABEL = 'iOS ruhig v6 · Komma & Farbtafel';
 
 const DEFAULT_STATE = {
   inputs: {
@@ -35,9 +35,25 @@ function todayIso() {
 function toNumber(value) {
   if (value === null || value === undefined || value === '') return 0;
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
-  const normalized = String(value).replace(/\./g, '').replace(',', '.');
+  const normalized = String(value).trim().replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
   const n = Number(normalized);
   return Number.isFinite(n) ? n : 0;
+}
+
+function formatNumberForInput(value) {
+  if (value === null || value === undefined || value === '') return '';
+  if (typeof value === 'string') return value.replace('.', ',');
+  if (!Number.isFinite(value)) return '';
+  return String(value).replace('.', ',');
+}
+
+function resultLabel(ampel) {
+  return {
+    'GRÜN': 'Kauf möglich',
+    'GELB': 'Bewusst prüfen',
+    'DUNKELGELB': 'Warnbereich',
+    'ROT': 'Nicht kaufen'
+  }[ampel] || '—';
 }
 
 function parseDate(value) {
@@ -83,15 +99,30 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function bindInputs() {
+const numericInputIds = ['currentBalance','purchaseAmount','greenThreshold','warnThreshold','criticalThreshold'];
+
+function syncInputValuesFromState() {
   for (const id of ids) {
-    els[id].value = state.inputs[id] ?? '';
+    if (!els[id]) continue;
+    els[id].value = numericInputIds.includes(id) ? formatNumberForInput(state.inputs[id]) : (state.inputs[id] ?? '');
+  }
+}
+
+function bindInputs() {
+  syncInputValuesFromState();
+  for (const id of ids) {
     els[id].addEventListener('input', () => {
-      const numeric = ['currentBalance','purchaseAmount','greenThreshold','warnThreshold','criticalThreshold'];
-      state.inputs[id] = numeric.includes(id) ? toNumber(els[id].value) : els[id].value;
+      state.inputs[id] = numericInputIds.includes(id) ? toNumber(els[id].value) : els[id].value;
       saveState();
-      render();
+      renderSummary();
+      renderForecast();
     });
+
+    if (numericInputIds.includes(id)) {
+      els[id].addEventListener('blur', () => {
+        els[id].value = formatNumberForInput(state.inputs[id]);
+      });
+    }
   }
 }
 
@@ -204,7 +235,7 @@ function setText(id, text) {
 function setAmpelElement(id, ampel) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.textContent = ampel;
+  el.textContent = id === 'mainAmpel' ? resultLabel(ampel) : ampel;
   el.className = id === 'mainAmpel' ? `ampel-pill ${ampelClass(ampel)}` : ampelClass(ampel);
 }
 
@@ -222,7 +253,7 @@ function renderSummary() {
   const cls = ampelClass(s.ampelAfter);
 
   setAmpelElement('mainAmpel', s.ampelAfter);
-  setText('ampelAfter', s.ampelAfter);
+  setText('ampelAfter', resultLabel(s.ampelAfter));
   setText('ampelWithout', s.ampelWithout);
   setText('quality', s.quality);
   setText('lowestForecast', moneyOrDash(s.lowest));
@@ -279,7 +310,7 @@ function renderMovements() {
 
     node.querySelectorAll('[data-field]').forEach(input => {
       const field = input.dataset.field;
-      input.value = movement[field] ?? '';
+      input.value = field === 'amount' ? formatNumberForInput(movement[field]) : (movement[field] ?? '');
 
       const updateStateFromField = () => {
         state.movements[index][field] = field === 'amount' ? toNumber(input.value) : input.value;
@@ -293,7 +324,10 @@ function renderMovements() {
         });
       } else {
         input.addEventListener('input', updateStateFromField);
-        input.addEventListener('blur', render);
+        input.addEventListener('blur', () => {
+          if (field === 'amount') input.value = formatNumberForInput(state.movements[index][field]);
+          render();
+        });
         input.addEventListener('change', render);
       }
     });
@@ -400,7 +434,7 @@ function setupBackup() {
           movements: Array.isArray(imported.movements) ? imported.movements : []
         };
         saveState();
-        for (const id of ids) els[id].value = state.inputs[id] ?? '';
+        syncInputValuesFromState();
         document.getElementById('jsonPreview').value = JSON.stringify(state, null, 2);
         render();
       } catch (error) {
@@ -416,7 +450,7 @@ function setupBackup() {
     if (!ok) return;
     state = structuredClone(DEFAULT_STATE);
     saveState();
-    for (const id of ids) els[id].value = state.inputs[id] ?? '';
+    syncInputValuesFromState();
     render();
   });
 }
