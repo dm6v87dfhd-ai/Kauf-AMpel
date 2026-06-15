@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2937" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Giropuffer" />
+  <meta name="description" content="Lokale Giropuffer-Ampel für iPhone und GitHub Pages." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>Giropuffer-Ampel</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">iPhone Web-App</p>
+        <h1>Giropuffer-Ampel</h1>
+        <p class="subtitle">Tiefpunkt bis Gehalt prüfen, Kaufbetrag einrechnen, Ampel lesen.</p>
+      </div>
+      <div id="mainAmpel" class="ampel-pill neutral">—</div>
+    </header>
+
+    <main>
+      <section class="card status-card">
+        <div class="status-topline">
+          <div>
+            <p class="label">Ampel nach Kauf</p>
+            <h2 id="ampelAfter">—</h2>
+          </div>
+          <div class="mini-stack">
+            <span>ohne Kauf: <strong id="ampelWithout">—</strong></span>
+            <span>Aussagequalität: <strong id="quality">—</strong></span>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi"><span>Niedrigster Prognose-Kontostand</span><strong id="lowestForecast">—</strong></div>
+          <div class="kpi"><span>Nach geprüftem Kauf</span><strong id="lowestAfterPurchase">—</strong></div>
+          <div class="kpi"><span>Freier Puffer nach Kauf</span><strong id="freeBufferAfterPurchase">—</strong></div>
+          <div class="kpi"><span>Direkt vor Gehalt</span><strong id="beforeSalary">—</strong></div>
+        </div>
+        <p id="decisionText" class="decision-text">Trage deine Werte ein, um die Ampel zu berechnen.</p>
+      </section>
+
+      <nav class="tabs" aria-label="Bereiche">
+        <button class="tab active" data-tab="dashboard">Dashboard</button>
+        <button class="tab" data-tab="movements">Bewegungen</button>
+        <button class="tab" data-tab="forecast">Prognose</button>
+        <button class="tab" data-tab="backup">Sicherung</button>
+      </nav>
+
+      <section id="tab-dashboard" class="tab-panel active">
+        <div class="card">
+          <h2>Eingaben</h2>
+          <div class="form-grid">
+            <label>Stichtag / Kontostand-Datum
+              <input id="asOfDate" type="date" />
+            </label>
+            <label>Aktueller Kontostand Giro
+              <input id="currentBalance" type="number" inputmode="decimal" step="0.01" />
+            </label>
+            <label>Nächster Gehaltseingang
+              <input id="salaryDate" type="date" />
+            </label>
+            <label>Kaufbetrag prüfen
+              <input id="purchaseAmount" type="number" inputmode="decimal" step="0.01" />
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Schwellen</h2>
+          <p class="helper">Diese Werte entsprechen der Excel-Logik: Grün ab Soll-Giropuffer, Gelb ab Warnschwelle, Rot unter kritischer Schwelle.</p>
+          <div class="form-grid">
+            <label>Soll-Giropuffer / Grün ab
+              <input id="greenThreshold" type="number" inputmode="decimal" step="1" />
+            </label>
+            <label>Warnschwelle / Gelb ab
+              <input id="warnThreshold" type="number" inputmode="decimal" step="1" />
+            </label>
+            <label>Kritische Schwelle / Rot darunter
+              <input id="criticalThreshold" type="number" inputmode="decimal" step="1" />
+            </label>
+          </div>
+        </div>
+
+        <div class="card compact-table-card">
+          <h2>Auswertung</h2>
+          <table class="summary-table">
+            <tbody>
+              <tr><th>Sichere Eingänge bis Gehalt</th><td id="safeIncome">—</td></tr>
+              <tr><th>Sichere Ausgänge bis Gehalt</th><td id="safeOutgoings">—</td></tr>
+              <tr><th>Offene sichere Bewegungen</th><td id="openCount">—</td></tr>
+              <tr><th>Datenalter in Tagen</th><td id="dataAge">—</td></tr>
+              <tr><th>Abstand zur Warnschwelle nach Kauf</th><td id="distanceWarn">—</td></tr>
+              <tr><th>Abstand zur kritischen Schwelle nach Kauf</th><td id="distanceCritical">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card rules-card">
+          <h2>Leselogik</h2>
+          <div class="rule green"><strong>GRÜN</strong><span>über Soll-Giropuffer – Kauf grundsätzlich möglich, wenn er zu deinen Kaufregeln passt.</span></div>
+          <div class="rule yellow"><strong>GELB</strong><span>unter Soll, aber über Warnschwelle – bewusst entscheiden oder verschieben.</span></div>
+          <div class="rule darkyellow"><strong>DUNKELGELB</strong><span>unter Warnschwelle – keine spontanen Zusatzkäufe; erst Konto klären.</span></div>
+          <div class="rule red"><strong>ROT</strong><span>unter kritischer Schwelle – nichts Zusätzliches kaufen; Puffer wiederherstellen.</span></div>
+          <p class="helper strong">Merksatz: Lies den niedrigsten Prognose-Kontostand nach Kauf – nicht nur den heutigen Kontostand.</p>
+        </div>
+      </section>
+
+      <section id="tab-movements" class="tab-panel">
+        <div class="card">
+          <div class="section-title-row">
+            <div>
+              <h2>Offene Bewegungen</h2>
+              <p class="helper">Gezählt werden nur: Datum ab Stichtag, vor Gehalt, Sicher? = Ja, Status = Offen.</p>
+            </div>
+            <button id="addMovement" class="primary-button" type="button">+ Bewegung</button>
+          </div>
+          <div id="movementList" class="movement-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-forecast" class="tab-panel">
+        <div class="card">
+          <h2>Tägliche Giro-Prognose</h2>
+          <p class="helper">Die App bildet die Excel-Prognose nach: Start beim aktuellen Kontostand, dann kumulierte sichere/offene Bewegungen je Tag.</p>
+          <div id="forecastList" class="forecast-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-backup" class="tab-panel">
+        <div class="card">
+          <h2>Sichern & Wiederherstellen</h2>
+          <p class="helper">Deine Eingaben bleiben lokal im Browser auf deinem iPhone. Für Sicherheit kannst du zusätzlich eine JSON-Datei exportieren.</p>
+          <div class="button-row">
+            <button id="exportJson" class="primary-button" type="button">JSON exportieren</button>
+            <label class="file-button">JSON importieren<input id="importJson" type="file" accept="application/json,.json" /></label>
+          </div>
+          <textarea id="jsonPreview" readonly placeholder="Exportierte oder importierte Daten werden hier angezeigt."></textarea>
+          <button id="resetApp" class="danger-button" type="button">App zurücksetzen</button>
+        </div>
+
+        <div class="card">
+          <h2>Installation auf dem iPhone</h2>
+          <ol class="steps">
+            <li>GitHub-Pages-Link in Safari öffnen.</li>
+            <li>Teilen-Symbol antippen.</li>
+            <li>„Zum Home-Bildschirm“ auswählen.</li>
+            <li>Namen prüfen und hinzufügen.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="movementTemplate">
+    <article class="movement-card">
+      <div class="movement-card-header">
+        <strong class="movement-title">Bewegung</strong>
+        <button class="ghost-button delete-movement" type="button">Löschen</button>
+      </div>
+      <div class="movement-grid">
+        <label>Datum<input data-field="date" type="date" /></label>
+        <label>Typ<select data-field="type"><option>Eingang</option><option>Ausgang</option></select></label>
+        <label>Kategorie<input data-field="category" type="text" placeholder="z. B. Abo" /></label>
+        <label>Beschreibung<input data-field="description" type="text" placeholder="z. B. Streaming" /></label>
+        <label>Betrag<input data-field="amount" type="number" inputmode="decimal" step="0.01" /></label>
+        <label>Sicher?<select data-field="secure"><option>Ja</option><option>Nein</option></select></label>
+        <label>Status<select data-field="status"><option>Offen</option><option>Abgegangen</option></select></label>
+        <label>Hinweis<input data-field="note" type="text" /></label>
+      </div>
+      <p class="movement-check" data-role="checkText">—</p>
+    </article>
+  </template>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
