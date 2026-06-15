@@ -79,9 +79,8 @@ h2 { margin-bottom: 12px; font-size: 1.08rem; letter-spacing: -0.025em; }
 }
 
 .status-card {
-  position: sticky;
-  top: max(8px, env(safe-area-inset-top));
-  z-index: 10;
+  /* Nicht sticky: Die Ampel bleibt normal oben im Inhalt und verdeckt beim Scrollen nichts. */
+  position: relative;
   box-shadow: var(--shadow);
   border-color: rgba(229, 231, 235, .75);
   overflow: hidden;
