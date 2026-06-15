@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'giropuffer-ampel-v3-state';
-const VERSION_LABEL = 'iOS ruhig v4';
+const VERSION_LABEL = 'iOS ruhig v5 · Tastatur-Fix';
 
 const DEFAULT_STATE = {
   inputs: {
@@ -280,11 +280,22 @@ function renderMovements() {
     node.querySelectorAll('[data-field]').forEach(input => {
       const field = input.dataset.field;
       input.value = movement[field] ?? '';
-      input.addEventListener('input', () => {
+
+      const updateStateFromField = () => {
         state.movements[index][field] = field === 'amount' ? toNumber(input.value) : input.value;
         saveState();
-        render();
-      });
+      };
+
+      if (input.tagName === 'SELECT' || input.type === 'date') {
+        input.addEventListener('change', () => {
+          updateStateFromField();
+          render();
+        });
+      } else {
+        input.addEventListener('input', updateStateFromField);
+        input.addEventListener('blur', render);
+        input.addEventListener('change', render);
+      }
     });
 
     node.querySelector('.delete-movement').addEventListener('click', () => {

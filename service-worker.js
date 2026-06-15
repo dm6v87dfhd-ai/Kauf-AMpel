@@ -1,4 +1,4 @@
-const CACHE_NAME = 'giropuffer-ampel-v4-ios-ruhig-2';
+const CACHE_NAME = 'giropuffer-ampel-v5-keyboardfix-1';
 const ASSETS = [
   './',
   './index.html',
