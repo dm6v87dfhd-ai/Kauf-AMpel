@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'giropuffer-ampel-v3-state';
+const VERSION_LABEL = 'iOS ruhig v4';
 
 const DEFAULT_STATE = {
   inputs: {
@@ -207,11 +208,21 @@ function setAmpelElement(id, ampel) {
   el.className = id === 'mainAmpel' ? `ampel-pill ${ampelClass(ampel)}` : ampelClass(ampel);
 }
 
+function statusClass(ampel) {
+  return {
+    'GRÜN': 'status-green',
+    'GELB': 'status-yellow',
+    'DUNKELGELB': 'status-darkyellow',
+    'ROT': 'status-red'
+  }[ampel] || 'status-neutral';
+}
+
 function renderSummary() {
   const s = calcSummary();
+  const cls = ampelClass(s.ampelAfter);
+
   setAmpelElement('mainAmpel', s.ampelAfter);
   setText('ampelAfter', s.ampelAfter);
-  document.getElementById('ampelAfter').className = ampelClass(s.ampelAfter);
   setText('ampelWithout', s.ampelWithout);
   setText('quality', s.quality);
   setText('lowestForecast', moneyOrDash(s.lowest));
@@ -224,6 +235,13 @@ function renderSummary() {
   setText('dataAge', s.age === null ? '—' : `${s.age} Tage`);
   setText('distanceWarn', moneyOrDash(s.distanceWarn));
   setText('distanceCritical', moneyOrDash(s.distanceCritical));
+
+  const ampelWord = document.getElementById('ampelAfter');
+  if (ampelWord) ampelWord.className = `ampel-word ${cls}`;
+  const ampelDot = document.getElementById('ampelDot');
+  if (ampelDot) ampelDot.className = `ampel-dot ${cls}`;
+  const statusCard = document.getElementById('statusCard');
+  if (statusCard) statusCard.className = `card status-card ${statusClass(s.ampelAfter)}`;
 
   const decision = document.getElementById('decisionText');
   if (!Number.isFinite(s.afterPurchase)) {

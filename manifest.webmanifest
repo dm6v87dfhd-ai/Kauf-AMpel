@@ -1,15 +1,25 @@
 {
   "name": "Giropuffer-Ampel",
   "short_name": "Giropuffer",
-  "description": "Lokale Giropuffer-Ampel für iPhone und GitHub Pages.",
+  "description": "Ruhige iPhone-Web-App zur lokalen Giropuffer-Ampel.",
   "lang": "de-DE",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f1ec",
-  "theme_color": "#1f2937",
+  "background_color": "#f2f2f7",
+  "theme_color": "#f2f2f7",
   "icons": [
-    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

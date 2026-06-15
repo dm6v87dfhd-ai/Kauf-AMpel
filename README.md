@@ -1,56 +1,38 @@
-# Giropuffer-Ampel iPhone Web-App
+# Giropuffer-Ampel – iOS ruhige Version
 
-Diese Web-App ist für GitHub Pages vorbereitet. Sie basiert auf der Logik der Excel-Datei `Giropuffer_Ampel_repariert_v3.xlsx`, enthält aber keine persönlichen Kontobewegungen aus der Excel, damit du sie sicher in ein öffentliches GitHub-Repository hochladen kannst.
+Diese Version ist für GitHub Pages mit `/docs` vorbereitet.
 
-## Enthaltene Excel-Logik
+## Struktur
 
-- Stichtag / Kontostand-Datum
-- aktueller Giro-Kontostand
-- nächster Gehaltseingang
-- Kaufbetrag prüfen
-- Soll-Giropuffer / Warnschwelle / kritische Schwelle
-- offene Bewegungen bis Gehalt
-- nur sichere und offene Bewegungen zählen
-- Tagesprognose bis zum Gehalt
-- niedrigster Prognose-Kontostand
-- niedrigster Prognose-Kontostand nach Kauf
-- Ampel: GRÜN / GELB / DUNKELGELB / ROT
-- Datenalter und Aussagequalität
+```text
+docs/
+  index.html
+  styles.css
+  app.js
+  manifest.webmanifest
+  service-worker.js
+  .nojekyll
+  icons/
+README.md
+```
 
-## Dateien
+## Update auf GitHub
 
-- `index.html` – Startdatei der App
-- `styles.css` – Gestaltung und Farben
-- `app.js` – Berechnung, lokale Speicherung, Import/Export
-- `manifest.webmanifest` – iPhone-/PWA-Informationen
-- `service-worker.js` – Offline-Cache
-- `.nojekyll` – GitHub Pages soll die Dateien unverändert ausliefern
-- `icons/` – App-Icons
+1. ZIP entpacken.
+2. Im GitHub-Repository den Ordner `docs` öffnen.
+3. Die Dateien aus diesem neuen `docs`-Ordner hochladen und die alten Dateien ersetzen.
+4. Unten auf `Commit changes` klicken.
+5. GitHub Pages bleibt auf `main` und `/docs` eingestellt.
 
-## GitHub Pages
+## Falls das iPhone die alte Version zeigt
 
-1. Neues Repository erstellen, z. B. `giropuffer-app`.
-2. Den Inhalt dieses Ordners hochladen. Wichtig: `index.html` muss direkt im Hauptverzeichnis liegen.
-3. In GitHub: `Settings` → `Pages`.
-4. `Source`: `Deploy from a branch`.
-5. Branch: `main`, Ordner: `/ root`.
-6. Speichern.
-7. GitHub zeigt danach den Link zur Website an.
-
-## iPhone
+Der Service-Worker-Cache wurde auf `giropuffer-ampel-v4-ios-ruhig-1` geändert.
+Falls trotzdem noch die alte Optik erscheint:
 
 1. GitHub-Pages-Link in Safari öffnen.
-2. Teilen-Symbol antippen.
-3. `Zum Home-Bildschirm` wählen.
-4. Namen prüfen und hinzufügen.
+2. Seite neu laden.
+3. Falls die Home-Bildschirm-App noch alt ist: App vom Homescreen löschen und neu hinzufügen.
 
-## Sicherheit
+## Datenschutz
 
-Die App-Dateien enthalten keine persönlichen Kontodaten. Deine Eingaben werden lokal im Browser gespeichert. Für Sicherungen nutze den JSON-Export in der App. Lade JSON-Sicherungen nicht in ein öffentliches GitHub-Repository hoch.
-
-## Anpassungen
-
-- Schwellenwerte: direkt in der App ändern oder in `app.js` unter `DEFAULT_STATE.inputs` anpassen.
-- Farben: in `styles.css` im Block `:root` ändern.
-- App-Name: in `index.html` und `manifest.webmanifest` ändern.
-- Offline-Cache nach Änderungen: in `service-worker.js` den Wert `CACHE_NAME` erhöhen, z. B. `...-2`.
+Keine JSON-Sicherungen mit echten Finanzdaten in GitHub hochladen. Die App speichert Eingaben lokal im Browser.
